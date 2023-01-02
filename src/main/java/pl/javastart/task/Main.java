@@ -19,12 +19,10 @@ public class Main {
             System.out.println("Suma wszystkich produktów: " + sumAllEuroPrices + " EUR");
             BigDecimal avgEuroPrices = productsUtility.calculateAvgEuroPrices(euroPriceList);
             System.out.println("Średnia wartość produktów: " + avgEuroPrices + " EUR");
-            int theMostExpensiveProductsIndex = productsUtility.getTheMostExpensiveProductsIndex(euroPriceList);
-            System.out.println("Najdroższy produkt: " + products.get(theMostExpensiveProductsIndex).getName() + ", jego cena: " +
-                    euroPriceList.get(theMostExpensiveProductsIndex) + " EUR");
-            int theCheapestProductsIndex = productsUtility.getTheCheapestProductsIndex(euroPriceList);
-            System.out.println("Najtańszy produkt: " + products.get(theCheapestProductsIndex).getName() + ", jego cena: " +
-                    euroPriceList.get(theCheapestProductsIndex) + " EUR");
+            Product theMostExpensiveProduct = productsUtility.getTheMostExpensiveProduct(euroPriceList, products);
+            System.out.println("Najdroższy produkt: " + theMostExpensiveProduct.getName());
+            Product theCheapestProduct = productsUtility.getTheCheapestProduct(euroPriceList, products);
+            System.out.println("Najtańszy produkt: " + theCheapestProduct.getName());
         } catch (FileNotFoundException e) {
             System.err.println("Podany plik nie istnieje");
         }

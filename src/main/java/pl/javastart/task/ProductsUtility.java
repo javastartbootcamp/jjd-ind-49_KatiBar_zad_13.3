@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -12,32 +13,34 @@ public class ProductsUtility {
     public List<Product> readFileAndCreateProductsList(String fileName) throws FileNotFoundException {
         List<Product> products = new ArrayList<>();
         File file = new File(fileName);
-        Scanner scanner = new Scanner(file);
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            String[] split = line.split(";");
-            String name = split[0];
-            double price = Double.parseDouble(split[1]);
-            String currency = split[2];
-            Product product = new Product(name, price, currency);
-            products.add(product);
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] split = line.split(";");
+                String name = split[0];
+                double price = Double.parseDouble(split[1]);
+                String currency = split[2];
+                Product product = new Product(name, price, currency);
+                products.add(product);
+            }
+            return products;
         }
-        return products;
     }
 
     public List<Currency> readFileAndCreateCurrenciesList(String fileName) throws FileNotFoundException {
         List<Currency> currencies = new ArrayList<>();
         File file = new File(fileName);
-        Scanner scanner = new Scanner(file);
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            String[] split = line.split(";");
-            String currencyName = split[0];
-            double price = Double.parseDouble(split[1]);
-            Currency currency = new Currency(currencyName, price);
-            currencies.add(currency);
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] split = line.split(";");
+                String currencyName = split[0];
+                double price = Double.parseDouble(split[1]);
+                Currency currency = new Currency(currencyName, price);
+                currencies.add(currency);
+            }
+            return currencies;
         }
-        return currencies;
     }
 
     public List<BigDecimal> createEuroPriceList(List<Product> products, List<Currency> currencies) {
@@ -47,7 +50,8 @@ public class ProductsUtility {
                 if (product.getCurrency().equals(currencies.get(i).getCurrencyName())) {
                     double productPrice = product.getPrice();
                     double currency = currencies.get(i).getPrice();
-                    BigDecimal priceInEuro = BigDecimal.valueOf(productPrice).divide(BigDecimal.valueOf(currency), MathContext.DECIMAL64);
+                    BigDecimal priceInEuro = BigDecimal.valueOf(productPrice).divide(BigDecimal.valueOf(currency),
+                            2, RoundingMode.HALF_UP);
                     euroPrices.add(priceInEuro);
                     break;
                 }
@@ -70,7 +74,7 @@ public class ProductsUtility {
         return avg;
     }
 
-    public int getTheMostExpensiveProductsIndex(List<BigDecimal> bigDecimalList) {
+    public Product getTheMostExpensiveProduct(List<BigDecimal> bigDecimalList, List<Product> products) {
         int index = 0;
         BigDecimal theBiggestPrice = BigDecimal.valueOf(0);
         for (int i = 0; i < bigDecimalList.size(); i++) {
@@ -79,10 +83,10 @@ public class ProductsUtility {
                 index = i;
             }
         }
-        return index;
+        return products.get(index);
     }
 
-    public int getTheCheapestProductsIndex(List<BigDecimal> bigDecimalList) {
+    public Product getTheCheapestProduct(List<BigDecimal> bigDecimalList, List<Product> products) {
         int index = 0;
         BigDecimal theSmallestPrice = bigDecimalList.get(0);
         for (int i = 0; i < bigDecimalList.size(); i++) {
@@ -91,6 +95,6 @@ public class ProductsUtility {
                 index = i;
             }
         }
-        return index;
+        return products.get(index);
     }
 }
